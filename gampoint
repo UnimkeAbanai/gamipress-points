@@ -1,0 +1,45 @@
+<?php
+/**
+ * Function to format and display the current user's GamiPress points with color coding based on the points value.
+ *
+ * This function retrieves the points for the logged-in user using the GamiPress function `gamipress_get_user_points()`.
+ * The points are then formatted with commas for better readability and displayed with different colors according to the amount.
+ *
+ * - Points over 1000 are displayed in green (#61CE70).
+ * - Points between 500 and 1000 are displayed in yellow (#fcb900).
+ * - Points below 500 are displayed in red (#e31414).
+ *
+ * If the user has no points, a default value of '0' is shown.
+ * 
+ * The formatted points are wrapped in a <span> element with inline CSS to set the color and an optional class 
+ * "gamipress-custom-points" for further customization via external stylesheets.
+ *
+ * This function is also registered as a shortcode [custom_gamipress_points], allowing it to be used within 
+ * posts, pages, or widgets to display the user's points.
+ *
+ * @return void Outputs the formatted and color-coded points for the current user.
+ */
+
+function format_gamipress_points() {
+    // Replace 'my_point_type' with the actual point type slug you are using
+    $points = gamipress_get_user_points(get_current_user_id(), 'credits');
+
+    // Check if points exist and format them with commas
+    if ($points !== null) {
+        $formatted_points = number_format($points);
+    } else {
+        $formatted_points = '0';
+    }
+
+    // Determine the color based on points value
+    $color = '#e31414'; // Default color for points below 500
+    if ($points > 1000) {
+        $color = '#61CE70'; // Green for points over 1000
+    } elseif ($points >= 500) {
+        $color = '#fcb900'; // Yellow for points between 500 and 1000
+    }
+
+    // Output the formatted points with inline styles for color
+    echo '<span class="gamipress-custom-points" style="color: ' . $color . ';">' . $formatted_points . '</span>';
+}
+add_shortcode('custom_gamipress_points', 'format_gamipress_points');
